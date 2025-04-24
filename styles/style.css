@@ -16,16 +16,41 @@ body{
     background-color: rgb(209, 210, 204);
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     text-align: center;
+    color:rgb(21, 21, 21);
     border: 5px solid black;
     margin: 20px;
     padding: 10px;
     
 }
 
-.centeredlist{
+.centeredList{
     padding-left: 0;
-    list-style-position: outside;
+    list-style-position: inside;
     margin: 0 auto;
     display: table;
     text-align: left;
+}
+
+.on_page_link{
+    color:rgb(1, 1, 39);
+}
+
+.favs{
+    color:rgb(13, 13, 13);
+}
+
+.check_out{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.centered-iframe {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0;
+  }
+
+.tableauPlaceholder {
+width: 1000px; /* or whatever size fits your layout */
 }
