@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Incredibles Calculus Challenge</title>
+  <style>
+    body {
+      font-family: 'Arial Black', Gadget, sans-serif;
+      background-color: #ff2c2c;
+      background-image: radial-gradient(circle at center, #ff6a00, #ff2c2c);
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      text-shadow: 2px 2px #000;
+    }
+
+    #problem {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+      text-shadow: 1px 1px #000;
+    }
+
+    input, button {
+      padding: 0.5rem;
+      font-size: 1.2rem;
+      margin: 0.5rem;
+      border-radius: 5px;
+      border: none;
+    }
+
+    #result {
+      font-size: 2rem;
+      margin-top: 1rem;
+      text-shadow: 1px 1px #000;
+    }
+
+    #celebration {
+      display: none;
+      font-size: 3rem;
+      color: yellow;
+      text-shadow: 2px 2px black;
+      animation: bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-20px); }
+    }
+
+    #restartBtn {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      font-size: 1.2rem;
+      background: #ffcc00;
+      color: black;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <h1>Incredibles Calculus Challenge!</h1>
+  <div id="problem"></div>
+  <input type="text" id="answer" placeholder="Your answer here">
+  <button onclick="checkAnswer()">Submit</button>
+  <div id="result"></div>
+  <div id="celebration">🎉 HAPPY BIRTHDAY! 🎉</div>
+  <button id="restartBtn" onclick="restart()">Start Over</button>
+
+  <canvas id="confetti"></canvas>
+  <audio id="cheerSound" src="https://www.soundjay.com/human/applause-8.mp3"></audio>
+
+  <script>
+    const problems = [
+      { q: "What is the derivative of f(x) = x²?", a: "2x" },
+      { q: "What is ∫ x dx?", a: "0.5x^2" },
+      { q: "What is the derivative of sin(x)?", a: "cos(x)" },
+      { q: "What is ∫ 1/x dx?", a: "ln|x|" },
+      { q: "What is the derivative of e^x?", a: "e^x" },
+      { q: "What is the derivative of ln(x)?", a: "1/x" },
+      { q: "What is ∫ cos(x) dx?", a: "sin(x)" },
+      { q: "What is ∫ e^x dx?", a: "e^x" }
+    ];
+
+    let currentProblem = {};
+    let confettiInterval;
+
+    function generateProblem() {
+      const randIndex = Math.floor(Math.random() * problems.length);
+      currentProblem = problems[randIndex];
+      document.getElementById('problem').textContent = currentProblem.q;
+    }
+
+    function checkAnswer() {
+      const userAnswer = document.getElementById('answer').value.trim().replace(/\s/g, '');
+      const correctAnswer = currentProblem.a.replace(/\s/g, '');
+      if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+        document.getElementById('result').textContent = "Correct!";
+        celebrate();
+      } else {
+        document.getElementById('result').textContent = "Try again!";
+      }
+    }
+
+    function celebrate() {
+      document.getElementById('celebration').style.display = 'block';
+      document.getElementById('restartBtn').style.display = 'inline-block';
+      const cheerSound = document.getElementById('cheerSound');
+      cheerSound.currentTime = 0;
+      cheerSound.play();
+      launchConfetti();
+    }
+
+    function restart() {
+      document.getElementById('result').textContent = '';
+      document.getElementById('answer').value = '';
+      document.getElementById('celebration').style.display = 'none';
+      document.getElementById('restartBtn').style.display = 'none';
+      const cheerSound = document.getElementById('cheerSound');
+      cheerSound.pause();
+      cheerSound.currentTime = 0;
+      stopConfetti();
+      generateProblem();
+    }
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = Array.from({length: 150}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * 40 + 10,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+        tilt: Math.random() * 10 - 5,
+        tiltAngle: 0,
+        tiltAngleIncrement: Math.random() * 0.1 + 0.05
+      }));
+
+      function drawConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let p of particles) {
+          ctx.beginPath();
+          ctx.lineWidth = p.r / 2;
+          ctx.strokeStyle = p.color;
+          ctx.moveTo(p.x + p.tilt, p.y);
+          ctx.lineTo(p.x + p.tilt + p.r, p.y + p.r / 2);
+          ctx.stroke();
+        }
+        updateParticles();
+      }
+
+      function updateParticles() {
+        for (let p of particles) {
+          p.y += Math.cos(p.d) + 1 + p.r / 2;
+          p.x += Math.sin(p.d);
+          p.tiltAngle += p.tiltAngleIncrement;
+          p.tilt = Math.sin(p.tiltAngle) * 15;
+          if (p.y > canvas.height) {
+            p.y = -10;
+            p.x = Math.random() * canvas.width;
+          }
+        }
+      }
+
+      confettiInterval = setInterval(drawConfetti, 30);
+    }
+
+    function stopConfetti() {
+      clearInterval(confettiInterval);
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    window.onload = generateProblem;
+  </script>
+</body>
+</html>
+
